@@ -1,5 +1,5 @@
 import { useListBudgets, useDeleteBudget, getListBudgetsQueryKey } from "@workspace/api-client-react";
-import { formatCurrency } from "@/lib/utils";
+import { useCurrency } from "@/lib/currency-provider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { BudgetForm } from "@/components/budget-form";
@@ -23,6 +23,7 @@ const item = {
 };
 
 export default function Budgets() {
+  const { formatCurrency } = useCurrency();
   const { data: budgets, isLoading } = useListBudgets();
   const deleteBudget = useDeleteBudget();
   const queryClient = useQueryClient();

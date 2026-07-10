@@ -1,6 +1,7 @@
 import { useGetSummary } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
+import { useCurrency } from "@/lib/currency-provider";
 import { ArrowDownRight, ArrowUpRight, DollarSign, Wallet } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ const item = {
 };
 
 export default function Dashboard() {
+  const { formatCurrency } = useCurrency();
   const { data: summary, isLoading } = useGetSummary();
 
   return (

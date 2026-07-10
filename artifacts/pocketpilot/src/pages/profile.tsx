@@ -1,10 +1,12 @@
 import { useTheme } from "@/lib/theme-provider";
+import { useCurrency, CURRENCIES, type CurrencyCode } from "@/lib/currency-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { User, Bell, Shield, Lock, CreditCard, HelpCircle, LogOut } from "lucide-react";
+import { Shield, CreditCard, HelpCircle, LogOut, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const container = {
   hidden: { opacity: 0 },
@@ -21,6 +23,7 @@ const item = {
 
 export default function Profile() {
   const { theme, setTheme } = useTheme();
+  const { currency, setCurrency } = useCurrency();
 
   return (
     <motion.div 
@@ -70,6 +73,34 @@ export default function Profile() {
               />
             </div>
             
+            <div className="w-full h-px bg-border"></div>
+
+            <div className="space-y-3">
+              <div className="space-y-0.5">
+                <Label className="text-base">Currency</Label>
+                <p className="text-sm text-muted-foreground">Choose how amounts are displayed across the app.</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {CURRENCIES.map((c) => (
+                  <button
+                    key={c.code}
+                    data-testid={`currency-option-${c.code}`}
+                    onClick={() => setCurrency(c.code as CurrencyCode)}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all",
+                      currency === c.code
+                        ? "border-primary bg-primary/10 text-primary font-medium"
+                        : "border-border hover:border-primary/50 hover:bg-muted/50"
+                    )}
+                  >
+                    <span className="text-base leading-none">{c.flag}</span>
+                    <span className="font-mono font-medium">{c.code}</span>
+                    {currency === c.code && <Check className="h-3 w-3 ml-auto shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="w-full h-px bg-border"></div>
             
             <div className="flex items-center justify-between">

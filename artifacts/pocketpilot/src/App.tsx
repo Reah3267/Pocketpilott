@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 import { ThemeProvider } from '@/lib/theme-provider';
+import { CurrencyProvider } from '@/lib/currency-provider';
 import { Layout } from '@/components/layout';
 
 import Dashboard from '@/pages/dashboard';
@@ -30,11 +31,13 @@ function Router() {
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="pocketpilot-theme">
-      <QueryClientProvider client={queryClient}>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-      </QueryClientProvider>
+      <CurrencyProvider>
+        <QueryClientProvider client={queryClient}>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+        </QueryClientProvider>
+      </CurrencyProvider>
     </ThemeProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { useGetByCategory, useGetMonthlySummary } from "@workspace/api-client-react";
-import { formatCurrency } from "@/lib/utils";
+import { useCurrency } from "@/lib/currency-provider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,7 @@ const item = {
 };
 
 export default function Reports() {
+  const { formatCurrency } = useCurrency();
   const { data: categoryData, isLoading: loadingCat } = useGetByCategory();
   const { data: monthlyData, isLoading: loadingMonth } = useGetMonthlySummary();
 

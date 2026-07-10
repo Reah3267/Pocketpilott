@@ -1,5 +1,6 @@
 import { useListTransactions } from "@workspace/api-client-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
+import { useCurrency } from "@/lib/currency-provider";
 import {
   Table,
   TableBody,
@@ -31,6 +32,7 @@ const item = {
 };
 
 export default function Transactions() {
+  const { formatCurrency } = useCurrency();
   const [filterType, setFilterType] = useState<string>("all");
   const [search, setSearch] = useState("");
   
