@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: PocketPilot API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: transactions
+    description: Transaction operations
+  - name: budgets
+    description: Budget operations
+  - name: summary
+    description: Dashboard summary
 paths:
   /healthz:
     get:
@@ -24,6 +30,238 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List all transactions
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: isIncome
+          in: query
+          schema:
+            type: ["boolean", "null"]
+        - name: paymentMethod
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Create a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /transactions/{id}:
+    get:
+      operationId: getTransaction
+      tags: [transactions]
+      summary: Get a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTransaction
+      tags: [transactions]
+      summary: Update a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionUpdate"
+      responses:
+        "200":
+          description: Updated transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTransaction
+      tags: [transactions]
+      summary: Delete a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /budgets:
+    get:
+      operationId: listBudgets
+      tags: [budgets]
+      summary: List all budgets
+      responses:
+        "200":
+          description: List of budgets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Budget"
+    post:
+      operationId: createBudget
+      tags: [budgets]
+      summary: Create a budget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BudgetInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+
+  /budgets/{id}:
+    patch:
+      operationId: updateBudget
+      tags: [budgets]
+      summary: Update a budget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BudgetUpdate"
+      responses:
+        "200":
+          description: Updated budget
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteBudget
+      tags: [budgets]
+      summary: Delete a budget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /summary:
+    get:
+      operationId: getSummary
+      tags: [summary]
+      summary: Dashboard summary
+      responses:
+        "200":
+          description: Summary data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Summary"
+
+  /summary/by-category:
+    get:
+      operationId: getByCategory
+      tags: [summary]
+      summary: Spending grouped by category
+      responses:
+        "200":
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryStat"
+
+  /summary/monthly:
+    get:
+      operationId: getMonthlySummary
+      tags: [summary]
+      summary: Monthly income vs expense trend (last 6 months)
+      responses:
+        "200":
+          description: Monthly trend
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthStat"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +272,133 @@ components:
       required:
         - status
 
+    Transaction:
+      type: object
+      required: [id, title, amount, isIncome, category, note, date, paymentMethod]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        amount:
+          type: number
+        isIncome:
+          type: boolean
+        category:
+          type: string
+        note:
+          type: string
+        date:
+          type: string
+        paymentMethod:
+          type: string
+
+    TransactionInput:
+      type: object
+      required: [title, amount, isIncome, category, date, paymentMethod]
+      properties:
+        title:
+          type: string
+        amount:
+          type: number
+        isIncome:
+          type: boolean
+        category:
+          type: string
+        note:
+          type: string
+        date:
+          type: string
+        paymentMethod:
+          type: string
+
+    TransactionUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        amount:
+          type: number
+        isIncome:
+          type: boolean
+        category:
+          type: string
+        note:
+          type: string
+        date:
+          type: string
+        paymentMethod:
+          type: string
+
+    Budget:
+      type: object
+      required: [id, title, category, total, used]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          type: string
+        total:
+          type: number
+        used:
+          type: number
+
+    BudgetInput:
+      type: object
+      required: [title, category, total]
+      properties:
+        title:
+          type: string
+        category:
+          type: string
+        total:
+          type: number
+
+    BudgetUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        category:
+          type: string
+        total:
+          type: number
+
+    Summary:
+      type: object
+      required: [totalIncome, totalExpenses, balance, recentTransactions]
+      properties:
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        balance:
+          type: number
+        recentTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+
+    CategoryStat:
+      type: object
+      required: [category, amount, count]
+      properties:
+        category:
+          type: string
+        amount:
+          type: number
+        count:
+          type: integer
+
+    MonthStat:
+      type: object
+      required: [month, income, expenses]
+      properties:
+        month:
+          type: string
+        income:
+          type: number
+        expenses:
+          type: number

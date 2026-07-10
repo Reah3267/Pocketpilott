@@ -1,6 +1,6 @@
-# [Project name]
+# PocketPilot
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A premium personal finance tracker — dashboard, transactions, budgets, and reports — rebuilt from Flutter to React web.
 
 ## Run & Operate
 

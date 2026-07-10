@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "PocketPilot"
+version = "1.0.0"
+id = "artifacts/pocketpilot"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23244
+
+[services.development]
+run = "pnpm --filter @workspace/pocketpilot run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/pocketpilot", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/pocketpilot/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23244"
+BASE_PATH = "/"
